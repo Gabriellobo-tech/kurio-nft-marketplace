@@ -657,7 +657,12 @@ export function DetailPage() {
         <ArrowLeft size={16} /> Início / Mercado / NFT
       </Link>
       {detail.isPending ? (
-        <Skeleton count={1} />
+        <div className="detail detail-loading" aria-label="Carregando NFT" aria-busy="true">
+          <div className="detail-gallery"><div className="detail-image skeleton" /></div>
+          <div className="detail-info" aria-hidden="true">
+            <div className="skeleton-line" /><div className="skeleton-line short" />
+          </div>
+        </div>
       ) : detail.isError ? (
         <Failure error={detail.error} retry={() => void detail.refetch()} />
       ) : (
@@ -666,6 +671,7 @@ export function DetailPage() {
             <div className="detail-gallery">
               <img
                 className="detail-image"
+                fetchPriority="high"
                 src={detail.data.galleryImage ?? detail.data.image}
                 alt={`Arte digital ${detail.data.name}`}
                 width="600"

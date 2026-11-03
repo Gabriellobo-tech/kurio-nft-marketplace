@@ -540,6 +540,7 @@ export function WalletsPage() {
           <label>
             Rede
             <select
+              aria-label="Rede"
               value={form.network}
               onChange={(e) =>
                 setForm({ ...form, network: e.target.value as Network })

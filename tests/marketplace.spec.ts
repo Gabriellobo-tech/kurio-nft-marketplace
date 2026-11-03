@@ -104,6 +104,7 @@ test("favorito otimista desfaz alteração em falha e recupera", async ({
   await login(page, "/nft/nft-1");
   await page.goto("/demo");
   await page.getByLabel("Falha ao salvar favorito").check();
+  await expect(page.getByText("Cenário atualizado.", {exact:true})).toBeVisible();
   await page.goto("/nft/nft-1");
   await page.getByRole("button", { name: "Favoritar", exact: true }).click();
   await expect(
@@ -114,6 +115,7 @@ test("favorito otimista desfaz alteração em falha e recupera", async ({
   ).toHaveAttribute("aria-pressed", "false");
   await page.goto("/demo");
   await page.getByLabel("Falha ao salvar favorito").uncheck();
+  await expect(page.getByText("Cenário atualizado.", {exact:true})).toBeVisible();
   await page.goto("/nft/nft-1");
   await page.getByRole("button", { name: "Favoritar", exact: true }).click();
   await expect(
@@ -222,6 +224,7 @@ test("timeout após criar recupera a mesma chave e o mesmo pedido", async ({
   await login(page);
   await page.goto("/demo");
   await page.getByLabel("Timeout após criar pedido").check();
+  await expect(page.getByText("Cenário atualizado.", {exact:true})).toBeVisible();
   await checkoutReview(page);
   let firstKey: string | undefined;
   page.on("request", (request) => {
@@ -256,6 +259,7 @@ test("sessão expirada preserva contexto e login permite retomada", async ({
   await page
     .getByRole("button", { name: "Expirar sessão", exact: true })
     .click();
+  await expect(page.getByText("Ação executada na camada de mocks.", {exact:true})).toBeVisible();
 
   await page.goto("/checkout");
   await expect(page).toHaveURL(/\/login\?redirect=%2Fcheckout/);

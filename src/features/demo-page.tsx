@@ -11,6 +11,8 @@ export function DemoPage() {
   const client = useQueryClient();
   const [id, setId] = useState("nft-1");
   const [message, setMessage] = useState("");
+  const [draft, setDraft] = useState<Partial<Scenario>>({});
+  const scenario = query.data ? { ...query.data, ...draft } : undefined;
   const patch = useMutation({
     mutationFn: (data: Partial<Scenario>) => api.setScenario(data),
     onMutate: (patch) => {
@@ -24,10 +26,16 @@ export function DemoPage() {
       setMessage("Cenário atualizado.");
     },
     onError: (error, _patch, context) => {
+      setDraft({});
       if (context?.previous) client.setQueryData(["demo-scenario"], context.previous);
       setMessage(errorMessage(error));
     },
   });
+  const updateScenario = (change: Partial<Scenario>) => {
+    setMessage("");
+    setDraft((current) => ({ ...current, ...change }));
+    patch.mutate(change);
+  };
   const action = useMutation({
     mutationFn: (action: string) => api.demo(action, id),
     onSuccess: (_data, name) => {
@@ -50,16 +58,16 @@ export function DemoPage() {
         Controles exclusivos de dados fictícios. Eventos passam pelo cliente
         Socket.IO; nenhuma chamada direta ao cache substitui os eventos.
       </p>
-      {query.data && (
+      {scenario && (
         <div className="account-grid">
           <div className="form-panel">
             <h2>Rede e operações</h2>
             <label>
               Latência
               <select
-                value={query.data.latency}
+                value={scenario.latency}
                 onChange={(e) =>
-                  patch.mutate({ latency: Number(e.target.value) })
+                  updateScenario({ latency: Number(e.target.value) })
                 }
               >
                 <option value={180}>Padrão · 180 ms</option>
@@ -80,8 +88,8 @@ export function DemoPage() {
               <label className="checkbox-label" key={key}>
                 <input
                   type="checkbox"
-                  checked={query.data![key]}
-                  onChange={(e) => patch.mutate({ [key]: e.target.checked })}
+                  checked={scenario[key]}
+                  onChange={(e) => updateScenario({ [key]: e.target.checked })}
                 />
                 {title}
               </label>
@@ -89,9 +97,9 @@ export function DemoPage() {
             <label>
               Resultado do pagamento
               <select
-                value={query.data.payment}
+                value={scenario.payment}
                 onChange={(e) =>
-                  patch.mutate({
+                  updateScenario({
                     payment: e.target.value as Scenario["payment"],
                   })
                 }
@@ -103,9 +111,9 @@ export function DemoPage() {
             <label>
               Tempo de processamento
               <select
-                value={query.data.orderDelay}
+                value={scenario.orderDelay}
                 onChange={(e) =>
-                  patch.mutate({ orderDelay: Number(e.target.value) })
+                  updateScenario({ orderDelay: Number(e.target.value) })
                 }
               >
                 <option value={2500}>2,5 segundos</option>

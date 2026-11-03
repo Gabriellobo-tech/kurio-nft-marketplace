@@ -3053,3 +3053,10 @@ h3 {
 .edition-chips button:hover:not(:disabled) {
   border-color: var(--accent);
 }
+
+/* Reserve the actual detail layout while REST data loads, preventing visible shifts. */
+.detail-loading .detail-info { min-height: 450px; width: 100%; }
+@media (max-width: 700px) {
+  .detail-gallery { width: calc(100% - 48px); }
+  .detail-loading .detail-info { min-height: 500px; }
+}
