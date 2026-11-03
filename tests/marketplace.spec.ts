@@ -121,6 +121,7 @@ test("favorito otimista desfaz alteração em falha e recupera", async ({
   await expect(
     page.getByRole("button", { name: "Favoritado", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByText("Favorito salvo.", {exact:true})).toBeVisible();
   await page.reload();
   await expect(
     page.getByRole("button", { name: "Favoritado", exact: true }),

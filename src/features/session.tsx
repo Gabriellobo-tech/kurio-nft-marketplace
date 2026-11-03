@@ -23,7 +23,9 @@ export function useCart() {
 export async function replaceSession(session: Session) {
   bumpSessionEpoch();
   await queryClient.cancelQueries();
-  queryClient.clear();
+  // Keep the active session Query instance: clearing it leaves mounted
+  // observers attached to the removed record, so logout may not repaint.
+  queryClient.removeQueries({ predicate: (query) => query.queryKey[0] !== "session" });
   queryClient.setQueryData(sessionKey, session);
   await queryClient.invalidateQueries();
 }
