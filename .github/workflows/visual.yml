@@ -1,0 +1,46 @@
+name: Visual regression
+on:
+  push:
+    paths:
+      - 'visual/**'
+      - 'playwright.visual.config.ts'
+      - '.github/workflows/visual.yml'
+  workflow_dispatch:
+    inputs:
+      update_baselines:
+        description: Generate candidate baselines for review
+        type: boolean
+        default: false
+permissions:
+  contents: read
+jobs:
+  visual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Compare screenshots or prepare initial candidates
+        env:
+          UPDATE_BASELINES: ${{ inputs.update_baselines }}
+        run: |
+          if [ "$UPDATE_BASELINES" = 'true' ] || [ ! -d visual/baselines ]; then
+            npx playwright test --config=playwright.visual.config.ts --update-snapshots
+          else
+            npx playwright test --config=playwright.visual.config.ts
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: visual-review
+          path: |
+            visual/baselines
+            visual-report
+            test-results
+          retention-days: 14
