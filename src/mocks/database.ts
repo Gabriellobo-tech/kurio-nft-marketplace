@@ -1,5 +1,5 @@
-import { pbkdf2Async } from "@noble/hashes/pbkdf2.js";
-import { sha256 } from "@noble/hashes/sha2.js";
+import { hashPassword } from "./password";
+export { hashPassword } from "./password";
 import { randomId } from "../lib/id";
 import { fixtures, editionFixtures } from "./fixtures";
 import { fromWei, toWei, sumEth } from "../lib/money";
@@ -54,13 +54,6 @@ export const defaults: Scenario = {
   orderDelay: 2500,
 };
 let current: DB;
-export async function hashPassword(password: string, salt: string) {
-  const bits = await pbkdf2Async(sha256, password, salt, {
-    c: 100000,
-    dkLen: 32,
-  });
-  return Array.from(bits, (b) => b.toString(16).padStart(2, "0")).join("");
-}
 export async function account(
   name: string,
   email: string,
