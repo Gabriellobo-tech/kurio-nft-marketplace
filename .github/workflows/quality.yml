@@ -1,6 +1,14 @@
 name: Quality checks
 on:
   push:
+    paths-ignore:
+      - 'visual/**'
+      - 'playwright.visual.config.ts'
+      - '.github/workflows/visual.yml'
+      - '.github/workflows/quality.yml'
+      - '*.md'
+      - 'validation/**'
+      - '.gitignore'
   pull_request:
   workflow_dispatch:
 permissions:

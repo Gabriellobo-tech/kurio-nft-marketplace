@@ -1,10 +1,11 @@
 name: Visual regression
 on:
   push:
-    paths:
-      - 'visual/**'
-      - 'playwright.visual.config.ts'
-      - '.github/workflows/visual.yml'
+    paths-ignore:
+      - '*.md'
+      - 'validation/**'
+      - '.github/workflows/quality.yml'
+  pull_request:
   workflow_dispatch:
     inputs:
       update_baselines:

@@ -24,7 +24,12 @@ for(const screen of ['home','detail','cart','checkout'] as const){
     }
     await expect(page.getByText('● Tempo real conectado',{exact:true})).toBeVisible();
     await page.locator('img').evaluateAll(async(images)=>{
-      await Promise.all(images.map(image=>image instanceof HTMLImageElement ? image.decode().catch(()=>undefined) : undefined));
+      await Promise.all(images.map(async(image)=>{
+        if(image instanceof HTMLImageElement){
+          image.loading="eager";
+          await image.decode().catch(()=>undefined);
+        }
+      }));
     });
     await expect(page).toHaveScreenshot(`${screen}.png`,{fullPage:true});
   });
