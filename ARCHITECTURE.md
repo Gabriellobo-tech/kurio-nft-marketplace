@@ -8,7 +8,7 @@ Esta é uma simulação local, sem autenticação de produção, blockchain ou b
 
 ## Conta e isolamento
 
-Duas contas iniciais com salt por usuário e PBKDF2/SHA-256 (100 mil iterações). Sessão fictícia tem validade de 30 minutos, persistida no banco simulado. Login incorpora o carrinho visitante com quantidades limitadas ao estoque. Perfil, favoritos, carteiras e pedidos pertencem a um ID de usuário.
+Duas contas iniciais com salt por usuário e PBKDF2/SHA-256 (100 mil iterações). Contextos seguros usam Web Crypto para derivação nativa; previews HTTP usam o fallback compatível de @noble/hashes, carregado sob demanda. Um teste cruza os dois caminhos com o PBKDF2 do Node para preservar contas já armazenadas. Sessão fictícia tem validade de 30 minutos, persistida no banco simulado. Login incorpora o carrinho visitante com quantidades limitadas ao estoque. Perfil, favoritos, carteiras e pedidos pertencem a um ID de usuário.
 
 Rotas privadas consultam a sessão antes de entrar. A interface reconsulta sessão a cada 15 segundos e trata respostas 401, apresentando retomada do contexto. Logout limpa consultas privadas e subscriptions. Mudança de identidade cancela e remove consultas do usuário anterior. Uma geração de sessão no cliente evita que uma resposta 401 antiga encerre a sessão nova. Handlers com latência verificam se a identidade mudou enquanto aguardavam para evitar mutação na conta nova.
 
@@ -42,7 +42,7 @@ MSW fixado em 2.12.0 após incompatibilidade observada com a versão mais recent
 
 Rotas de conta, pedido, checkout e laboratório são carregadas sob demanda. Mocks estão em chunk separado. Imagens WebP locais e fontes do sistema permitem execução sem imagens remotas. O visual Kurio foi reconstruído a partir das exportações mobile e desktop fornecidas pelo usuário. Recortes WebP das ilustrações substituem as artes provisórias. Medidas são aproximações por inspeção das imagens; fontes e assets originais não foram fornecidos. Veja ASSETS.md para as regiões extraídas e os desvios conhecidos.
 
-Radix Dialog oferece contenção/restauração de foco e fechamento por Escape. Labels, status ao vivo, foco visível, skeletons e reduced-motion foram incluídos. A auditoria completa de acessibilidade e os perfis 390/768/1440 precisam ser concluídos. Não há pontuação Lighthouse medida nesta etapa.
+Radix Dialog oferece contenção/restauração de foco e fechamento por Escape. Labels, status ao vivo, foco visível, skeletons e reduced-motion foram incluídos. A suíte funcional passou em desktop e mobile; 390/768/1440 também foram inspecionados manualmente. As notas automatizadas não substituem uma auditoria completa de acessibilidade. A execução CI 41632014730 mediu medianas de desempenho 94/100 (início mobile/desktop) e 95/100 (detalhe mobile/desktop), atendendo às metas configuradas.
 
 ## Edições e compatibilidade
 

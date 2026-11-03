@@ -1,6 +1,6 @@
 # Kurio — NFT Marketplace
 
-Implementação em progresso do desafio frontend, adaptada às exportações mobile e desktop Kurio fornecidas pelo usuário. **Ainda não é a entrega final para avaliação:** a suíte completa, regressão visual e auditorias precisam ser concluídas.
+Implementação do desafio frontend, adaptada às exportações mobile e desktop Kurio fornecidas pelo usuário. Compra, autenticação e tempo real são simulados. A versão validada passou em 32 testes E2E e oito unitários; as quatro combinações de página/perfil atingiram as metas Lighthouse. A publicação externa e a integração do PR de desempenho ainda precisam ser concluídas.
 
 ## Executar no VS Code
 
@@ -74,7 +74,7 @@ Veja [ARCHITECTURE.md](ARCHITECTURE.md), [API.md](API.md), [ASSETS.md](ASSETS.md
 
 ## Validação automática no GitHub
 
-O arquivo `.github/workflows/quality.yml` executa tipos, lint, sete testes unitários de precisão monetária, build e Playwright em cada push/PR. Um job separado executa as 12 auditorias Lighthouse contra o build de produção. Os relatórios são anexados à execução na aba Actions por 14 dias. Essa configuração ainda não foi executada no GitHub; sua presença não representa aprovação dos testes ou notas de performance.
+O arquivo `.github/workflows/quality.yml` executa tipos, lint, oito testes unitários de precisão monetária e compatibilidade de senhas, build e Playwright em cada push/PR. Um job separado executa as 12 auditorias Lighthouse contra o build de produção. Os relatórios são anexados à execução na aba Actions por 14 dias. A execução [41632014730](https://github.com/Gabriellobo-tech/kurio-nft-marketplace/actions/runs/41632014730) aprovou todos esses checks no commit `e47e61e`. Veja as evidências e os limites em VALIDATION.md.
 
 `npm test` usa o executor nativo de testes do Node e cobre conversão exata com 18 decimais, valores grandes, desconto, soma e rejeição de quantidades/representações inválidas.
 
@@ -88,11 +88,11 @@ npm run preview
 npm run audit -- http://localhost:4173
 ```
 
-O script executa três medições de início e detalhe, nos perfis mobile/desktop (12 auditorias), e grava HTML, JSON, ambiente, LCP/CLS/TBT e medianas em `validation/lighthouse`. As imagens e todos os mocks continuam ativos. Use `CHROME_PATH` apenas se o Chrome instalado não for encontrado. O script retorna falha caso encontre erro ou mediana abaixo das metas. Não há resultados medidos incluídos nesta versão.
+O script executa três medições de início e detalhe, nos perfis mobile/desktop (12 auditorias), e grava HTML, JSON, ambiente, LCP/CLS/TBT e medianas em `validation/lighthouse`. As imagens e todos os mocks continuam ativos. Use `CHROME_PATH` apenas se o Chrome instalado não for encontrado. O script retorna falha caso encontre erro ou mediana abaixo das metas. Na execução validada, as medianas de desempenho foram 94/100 para início mobile/desktop e 95/100 para detalhe mobile/desktop. As notas variam conforme o ambiente; a aprovação usa a mediana de três medições, sem descartar a primeira.
 
 ## GitHub e deploy externo
 
-Extraia o ZIP, abra a pasta no VS Code e execute `npm ci`. Publique os arquivos no seu repositório GitHub. Não envie `node_modules`, `dist` ou senhas pessoais. O lockfile, assets, mocks, testes e configurações devem permanecer no repositório.
+Extraia o ZIP, abra a pasta no VS Code e execute `npm ci`. O código está em [Gabriellobo-tech/kurio-nft-marketplace](https://github.com/Gabriellobo-tech/kurio-nft-marketplace); o ajuste validado está no PR #1. Não envie `node_modules`, `dist` ou senhas pessoais. O lockfile, assets, mocks, testes e configurações devem permanecer no repositório.
 
 - **Vercel:** importar o repositório, preset Vite, build `npm run build`, pasta de saída `dist`. `vercel.json` habilita acesso direto às rotas.
 - **Netlify:** mesmo build e saída. `public/_redirects` inclui fallback de SPA.
@@ -100,12 +100,21 @@ Extraia o ZIP, abra a pasta no VS Code e execute `npm ci`. Publique os arquivos 
 - Os mocks estão ligados por padrão no build; mantenha isso na entrega. Não há backend privado ou API key necessária.
 - O site de revisão no ChatGPT continua privado. Ele não substitui a URL pública exigida pelo avaliador.
 
+## Regressão visual
+
+As oito referências de início, detalhe, carrinho e checkout nos perfis desktop/mobile ficam em `visual/baselines`. O relógio é fixado e as imagens são decodificadas antes da captura. Para comparar:
+
+```sh
+npm run build
+npx playwright test --config=playwright.visual.config.ts
+```
+
+O workflow visual gera candidatos somente quando não existem referências ou quando a atualização é solicitada explicitamente. Revisar imagens candidatas antes de substituir referências. Uma comparação aprovada comprova estabilidade em relação às capturas do aplicativo; não comprova igualdade com o Figma.
+
 ## Pendências para entrega final
 
-- Refinar medidas, fontes originais e detalhes restantes de composição; os recortes disponíveis não substituem todos os assets originais.
-- Executar e ajustar toda a suíte Playwright, incluindo as novas edições e cenários de rede; criar baselines de regressão visual e controles de relógio determinísticos.
-- Executar as 12 auditorias Lighthouse, analisar os resultados e corrigir valores abaixo das metas. Lint, tipos e build são verificações distintas das auditorias.
-- Revisar integralmente acessibilidade, isolamento de sessão sob concorrência e desconexão enquanto um pedido está pendente (o cenário já foi exercitado manualmente; falta aprovação da suíte).
-- Publicar o repositório e a aplicação acessíveis aos avaliadores, mantendo código e build correspondentes.
+- Integrar o PR #1 após revisão e publicar uma URL externa acessível aos avaliadores. O link de revisão continua privado.
+- Concluir a comparação automática com as oito referências agora versionadas.
+- Fontes, medidas e alguns assets são aproximações das exportações fornecidas; não há certificação de igualdade pixel a pixel com o Figma.
 
-A implementação já cobre a compra simulada e foi exercitada manualmente, mas não deve ser apresentada como 100% aderente até concluir as pendências.
+Detalhes de execução e limitações estão em [VALIDATION.md](VALIDATION.md).

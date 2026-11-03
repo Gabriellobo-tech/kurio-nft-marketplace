@@ -10,3 +10,6 @@ playwright-report
 !.env.example
 
 visual-report
+
+# Full audit reports are available in CI artifacts.
+validation/lighthouse/
